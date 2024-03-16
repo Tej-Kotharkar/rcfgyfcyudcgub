@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keyboard Keys</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <style>
+    body {
+      text-align: center; 
+    }
+
+    h1 {
+      color: red;
+    }
+
+    #keyboardCanvas {
+      border-style: ridge;
+      border-width: 10px;
+      background-color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Keyboard Keys</h1>
+    <canvas id="keyboardCanvas" width="600" height="500" style="border:1px solid #000;"></canvas>
+    <h1 id="keyPressed">Press any keyboard key</h1>
+    <h1><b>NOTE:</b> Press any keyboard key</h1>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('keyboardCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const imagePaths = {
+      'Alphabetical key': 'Alpkey.png',
+      'Number key': 'numkey.png',
+      'Arrow key': 'Arrkey.png',
+      'Special key': 'spkey.png',
+      'Other key': 'otherkey.png'
+    };
+
+    const loadImage = (src) => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    };
+
+    const drawResult = async (keyType) => {
+      const imagePath = imagePaths[keyType];
+      const img = await loadImage(imagePath);
+
+      const aspectRatio = img.width / img.height;
+      const newHeight = 100;
+      const newWidth = newHeight * aspectRatio;
+
+      const x = (canvas.width - newWidth) / 2;
+      const y = (canvas.height - newHeight) / 2;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, x, y, newWidth, newHeight); 
+
+      document.getElementById('keyPressed').innerText = 'Pressed Key: ' + keyType;
+    };
+
+    document.addEventListener('keydown', function(event) {
+      const key = event.key;
+      const keyCode = event.keyCode;
+
+      let keyType;
+
+      if (((keyCode >= 65 && keyCode <= 90) || (keyCode >= 97 && keyCode <= 122)) && event.code !== 'Space') {
+        keyType = 'Alphabetical key';
+      } else if ((keyCode >= 48 && keyCode <= 57) || (keyCode >= 96 && keyCode <= 105)) {
+        keyType = 'Number key';
+      } else if (keyCode >= 37 && keyCode <= 40) {
+        keyType = 'Arrow key';
+      } else if (keyCode === 13 || keyCode === 16 || keyCode === 46) {
+        keyType = 'Special key';
+      } else {
+        keyType = 'Other key';
+      }
+
+      drawResult(keyType);
+    });
+  </script>
+</body>
+</html>
